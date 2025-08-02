@@ -68,7 +68,7 @@ lib/
 
 1. **Clone or download the project**
    ```bash
-   cd fundraising_portal
+   cd fundraising
    ```
 
 2. **Install dependencies**
