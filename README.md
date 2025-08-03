@@ -30,8 +30,8 @@ A simple Flutter application that simulates a fundraising intern portal with dum
 ## Mock Data
 
 The app uses realistic dummy data including:
-- **Intern Name**: Alex Johnson
-- **Referral Code**: alex2025
+- **Intern Name**: Shyam Babu
+- **Referral Code**: shyam2025
 - **Total Donations**: ₹15,750
 - **Referrals Count**: 23
 - **Leaderboard**: 5 mock users with varying performance metrics
