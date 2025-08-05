@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import '../models/user_data.dart';
+import '../utils/animations.dart';
+import '../widgets/custom_widgets.dart';
 import 'main_navigation.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -67,10 +70,12 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           );
           
-          // Navigate to main app
+          // Navigate to main app with page transition
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => const MainNavigation(),
+            PageTransition(
+              type: PageTransitionType.rightToLeftWithFade,
+              duration: const Duration(milliseconds: 600),
+              child: const MainNavigation(),
             ),
           );
         }
@@ -81,231 +86,348 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue.shade50,
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Logo/Header
-                Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade600,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.volunteer_activism,
-                    size: 60,
-                    color: Colors.white,
-                  ),
+      resizeToAvoidBottomInset: true,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Colors.blue.shade400,
+              Colors.blue.shade600,
+              Colors.purple.shade600,
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                padding: EdgeInsets.only(
+                  left: 24.0,
+                  right: 24.0,
+                  top: 16.0,
+                  bottom: MediaQuery.of(context).viewInsets.bottom + 16.0,
                 ),
-                const SizedBox(height: 32),
-                
-                // Title
-                Text(
-                  'Fundraising Portal',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue.shade800,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: constraints.maxHeight - 32.0,
                   ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                // Animated Logo/Header
+                const SizedBox(height: 40),
+                AppAnimations.bounceIn(
+                  Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.1),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.volunteer_activism,
+                      size: 50,
+                      color: Colors.white,
+                    ),
+                  ),
+                  duration: const Duration(milliseconds: 800),
+                ),
+                const SizedBox(height: 24),
+                
+                // Animated Title
+                AppAnimations.fadeInDown(
+                  Text(
+                    'Fundraising Portal',
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black26,
+                          offset: Offset(0, 2),
+                          blurRadius: 4,
+                        ),
+                      ],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  duration: const Duration(milliseconds: 600),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  _isLogin ? 'Welcome back!' : 'Join our mission',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Colors.grey.shade600,
+                AppAnimations.fadeInUp(
+                  Text(
+                    _isLogin ? 'Welcome back!' : 'Join our mission',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white.withValues(alpha: 0.9),
+                    ),
+                    textAlign: TextAlign.center,
                   ),
+                  duration: const Duration(milliseconds: 700),
                 ),
                 const SizedBox(height: 32),
 
-                // Form
-                Card(
-                  elevation: 8,
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
+                // Animated Form Card
+                AppAnimations.scaleIn(
+                  Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.symmetric(horizontal: 8),
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.2),
+                        width: 1,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
                     child: Form(
                       key: _formKey,
                       child: Column(
                         children: [
                           // Name Field (only for signup)
                           if (!_isLogin) ...[
-                            TextFormField(
-                              controller: _nameController,
-                              keyboardType: TextInputType.name,
-                              textCapitalization: TextCapitalization.words,
-                              decoration: const InputDecoration(
+                            AppAnimations.fadeInLeft(
+                              _buildAnimatedTextField(
+                                controller: _nameController,
                                 labelText: 'Full Name',
-                                prefixIcon: Icon(Icons.person),
-                                border: OutlineInputBorder(),
+                                prefixIcon: Icons.person,
+                                keyboardType: TextInputType.name,
+                                textCapitalization: TextCapitalization.words,
+                                validator: (value) {
+                                  if (!_isLogin) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter your full name';
+                                    }
+                                    if (value.trim().split(' ').length < 2) {
+                                      return 'Please enter your first and last name';
+                                    }
+                                  }
+                                  return null;
+                                },
                               ),
-                              validator: (value) {
-                                if (!_isLogin) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter your full name';
-                                  }
-                                  if (value.trim().split(' ').length < 2) {
-                                    return 'Please enter your first and last name';
-                                  }
-                                }
-                                return null;
-                              },
+                              duration: const Duration(milliseconds: 500),
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 12),
                           ],
 
                           // Email Field
-                          TextFormField(
-                            controller: _emailController,
-                            keyboardType: TextInputType.emailAddress,
-                            decoration: const InputDecoration(
+                          AppAnimations.fadeInRight(
+                            _buildAnimatedTextField(
+                              controller: _emailController,
                               labelText: 'Email',
-                              prefixIcon: Icon(Icons.email),
-                              border: OutlineInputBorder(),
+                              prefixIcon: Icons.email,
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your email';
+                                }
+                                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                                  return 'Please enter a valid email address';
+                                }
+                                return null;
+                              },
                             ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your email';
-                              }
-                              if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                                return 'Please enter a valid email address';
-                              }
-                              return null;
-                            },
+                            duration: const Duration(milliseconds: 600),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 12),
 
                           // Phone Field (only for signup)
                           if (!_isLogin) ...[
-                            TextFormField(
-                              controller: _phoneController,
-                              keyboardType: TextInputType.phone,
-                              decoration: const InputDecoration(
+                            AppAnimations.fadeInLeft(
+                              _buildAnimatedTextField(
+                                controller: _phoneController,
                                 labelText: 'Phone Number',
-                                prefixIcon: Icon(Icons.phone),
-                                border: OutlineInputBorder(),
+                                prefixIcon: Icons.phone,
+                                keyboardType: TextInputType.phone,
                                 hintText: '+91 9876543210',
+                                validator: (value) {
+                                  if (!_isLogin) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter your phone number';
+                                    }
+                                    String cleanPhone = value.replaceAll(RegExp(r'[\s\-\(\)\+]'), '');
+                                    if (cleanPhone.length < 10) {
+                                      return 'Please enter a valid phone number';
+                                    }
+                                  }
+                                  return null;
+                                },
                               ),
-                              validator: (value) {
-                                if (!_isLogin) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter your phone number';
-                                  }
-                                  // Remove spaces and special characters for validation
-                                  String cleanPhone = value.replaceAll(RegExp(r'[\s\-\(\)\+]'), '');
-                                  if (cleanPhone.length < 10) {
-                                    return 'Please enter a valid phone number';
-                                  }
-                                }
-                                return null;
-                              },
+                              duration: const Duration(milliseconds: 700),
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 12),
                           ],
 
                           // Password Field
-                          TextFormField(
-                            controller: _passwordController,
-                            obscureText: true,
-                            decoration: const InputDecoration(
+                          AppAnimations.fadeInRight(
+                            _buildAnimatedTextField(
+                              controller: _passwordController,
                               labelText: 'Password',
-                              prefixIcon: Icon(Icons.lock),
-                              border: OutlineInputBorder(),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your password';
-                              }
-                              if (value.length < 6) {
-                                return 'Password must be at least 6 characters';
-                              }
-                              if (!_isLogin && value.length < 8) {
-                                return 'Password must be at least 8 characters for signup';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Confirm Password Field (only for signup)
-                          if (!_isLogin) ...[
-                            TextFormField(
-                              controller: _confirmPasswordController,
+                              prefixIcon: Icons.lock,
                               obscureText: true,
-                              decoration: const InputDecoration(
-                                labelText: 'Confirm Password',
-                                prefixIcon: Icon(Icons.lock_outline),
-                                border: OutlineInputBorder(),
-                              ),
                               validator: (value) {
-                                if (!_isLogin) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please confirm your password';
-                                  }
-                                  if (value != _passwordController.text) {
-                                    return 'Passwords do not match';
-                                  }
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your password';
+                                }
+                                if (value.length < 6) {
+                                  return 'Password must be at least 6 characters';
+                                }
+                                if (!_isLogin && value.length < 8) {
+                                  return 'Password must be at least 8 characters for signup';
                                 }
                                 return null;
                               },
                             ),
-                            const SizedBox(height: 24),
+                            duration: const Duration(milliseconds: 800),
+                          ),
+                          const SizedBox(height: 12),
+
+                          // Confirm Password Field (only for signup)
+                          if (!_isLogin) ...[
+                            AppAnimations.fadeInLeft(
+                              _buildAnimatedTextField(
+                                controller: _confirmPasswordController,
+                                labelText: 'Confirm Password',
+                                prefixIcon: Icons.lock_outline,
+                                obscureText: true,
+                                validator: (value) {
+                                  if (!_isLogin) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please confirm your password';
+                                    }
+                                    if (value != _passwordController.text) {
+                                      return 'Passwords do not match';
+                                    }
+                                  }
+                                  return null;
+                                },
+                              ),
+                              duration: const Duration(milliseconds: 900),
+                            ),
+                            const SizedBox(height: 20),
                           ] else ...[
                             const SizedBox(height: 8),
                           ],
 
-                          // Submit Button
-                          SizedBox(
-                            width: double.infinity,
-                            height: 50,
-                            child: ElevatedButton(
-                              onPressed: _isLoading ? null : _submitForm,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue.shade600,
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              child: _isLoading
-                                  ? const CircularProgressIndicator(
-                                      color: Colors.white,
-                                    )
-                                  : Text(
-                                      _isLogin ? 'Login' : 'Sign Up',
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
+                          // Animated Submit Button
+                          AppAnimations.scaleIn(
+                            CustomWidgets.animatedButton(
+                              text: _isLogin ? 'Login' : 'Sign Up',
+                              onPressed: _submitForm,
+                              backgroundColor: Colors.white,
+                              textColor: Colors.blue.shade600,
+                              isLoading: _isLoading,
+                              icon: _isLogin ? Icons.login : Icons.person_add,
                             ),
+                            duration: const Duration(milliseconds: 1000),
                           ),
                         ],
                       ),
                     ),
                   ),
+                  duration: const Duration(milliseconds: 800),
                 ),
                 const SizedBox(height: 16),
 
-                // Toggle Auth Mode
-                TextButton(
-                  onPressed: _toggleAuthMode,
-                  child: Text(
-                    _isLogin
-                        ? "Don't have an account? Sign Up"
-                        : "Already have an account? Login",
-                    style: TextStyle(
-                      color: Colors.blue.shade600,
-                      fontWeight: FontWeight.w500,
+                // Animated Toggle Auth Mode Button
+                AppAnimations.fadeIn(
+                  TextButton(
+                    onPressed: _toggleAuthMode,
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      backgroundColor: Colors.white.withValues(alpha: 0.1),
+                    ),
+                    child: Text(
+                      _isLogin
+                          ? "Don't have an account? Sign Up"
+                          : "Already have an account? Login",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
+                  duration: const Duration(milliseconds: 1200),
                 ),
-              ],
-            ),
+                const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+              );
+            },
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAnimatedTextField({
+    required TextEditingController controller,
+    required String labelText,
+    required IconData prefixIcon,
+    TextInputType? keyboardType,
+    TextCapitalization? textCapitalization,
+    bool obscureText = false,
+    String? hintText,
+    String? Function(String?)? validator,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.9),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        textCapitalization: textCapitalization ?? TextCapitalization.none,
+        obscureText: obscureText,
+        validator: validator,
+        decoration: InputDecoration(
+          labelText: labelText,
+          hintText: hintText,
+          prefixIcon: Icon(
+            prefixIcon,
+            color: Colors.blue.shade600,
+          ),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
+          filled: true,
+          fillColor: Colors.transparent,
+          labelStyle: TextStyle(color: Colors.grey.shade700),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         ),
       ),
     );

@@ -160,6 +160,8 @@ class NotificationsScreen extends StatelessWidget {
                                     ? FontWeight.normal 
                                     : FontWeight.bold,
                               ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
                             ),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,6 +174,8 @@ class NotificationsScreen extends StatelessWidget {
                                         ? Colors.grey.shade600
                                         : Colors.grey.shade800,
                                   ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 2,
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
@@ -180,6 +184,8 @@ class NotificationsScreen extends StatelessWidget {
                                     fontSize: 12,
                                     color: Colors.grey.shade500,
                                   ),
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
                                 ),
                               ],
                             ),
